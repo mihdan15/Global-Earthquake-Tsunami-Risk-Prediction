@@ -5,7 +5,7 @@ import plotly.express as px
 
 # ---------- PAGE CONFIG ----------
 st.set_page_config(
-    page_title="🌊 Global Tsunami Risk AI",
+    page_title="Global Tsunami Risk AI",
     page_icon="🌊",
     layout="wide",
 )
@@ -30,7 +30,11 @@ mode = st.sidebar.radio(
 )
 
 st.sidebar.markdown("---")
-st.sidebar.caption("Developed by Ahmad Mihdan Advani • Global Earthquake–Tsunami Dataset (2001–2022)")
+st.sidebar.caption(
+    'Developed by Ahmad Mihdan Advani • '
+    '<a href="https://www.kaggle.com/datasets/ahmeduzaki/global-earthquake-tsunami-risk-assessment-dataset/" target="_blank">Global Earthquake–Tsunami Dataset (2001–2022)</a>',
+    unsafe_allow_html=True
+)
 
 # ======================================================================
 # 📊 MODE 1: ANALISIS HISTORIS
@@ -38,7 +42,7 @@ st.sidebar.caption("Developed by Ahmad Mihdan Advani • Global Earthquake–Tsu
 if mode == "Analisis Historis":
     st.title("Global Earthquake–Tsunami Analysis (2001–2022)")
     st.markdown(
-        "Menampilkan persebaran global dan pola tsunami menggunakan model historis (termasuk fitur waktu)."
+        "Menampilkan persebaran global dan pola tsunami menggunakan model historis."
     )
 
     # --- Peta Persebaran ---
@@ -68,7 +72,11 @@ if mode == "Analisis Historis":
         title="Hubungan Kedalaman dan Magnitudo terhadap Potensi Tsunami",
     )
     st.plotly_chart(fig2, use_container_width=True)
-
+    st.info("""
+    Sebagian besar gempa yang berpotensi tsunami terjadi pada kedalaman kurang dari 100 km 
+    dengan magnitudo di atas 7.5. Semakin dalam pusat gempa, kemungkinan menimbulkan tsunami
+    semakin kecil.
+    """)
 
     trend = (
         data.groupby("Year")["tsunami"]
@@ -87,6 +95,14 @@ if mode == "Analisis Historis":
     fig_trend.update_traces(line_color="#d62728")
     st.plotly_chart(fig_trend, use_container_width=True)
 
+    st.info("""
+    Jumlah kejadian tsunami mulai meningkat tajam setelah tahun 2011, yang bertepatan dengan 
+    terjadinya gempa besar di beberapa wilayah seperti Jepang dan Pasifik. 
+    Setelah itu, tren cenderung fluktuatif namun tetap berada pada level tinggi, 
+    menunjukkan peningkatan aktivitas gempa yang berpotensi tsunami dalam dekade terakhir.
+    """)
+
+
     fig_rate = px.line(
         trend,
         x=trend.index,
@@ -96,6 +112,14 @@ if mode == "Analisis Historis":
     )
     fig_rate.update_traces(line_color="#1f77b4")
     st.plotly_chart(fig_rate, use_container_width=True)
+
+    st.info("""
+    Persentase kejadian tsunami terhadap total gempa meningkat signifikan setelah 2011, 
+    bahkan mencapai lebih dari 60% di beberapa tahun. Hal ini mengindikasikan bahwa 
+    proporsi gempa yang memicu tsunami menjadi semakin besar pada periode modern, 
+    mungkin karena pengaruh lokasi gempa yang lebih dekat dengan lautan dangkal.
+    """)
+
 
     st.subheader("Distribusi Magnitude — Tsunami vs Non-Tsunami")
     st.caption("Menunjukkan distribusi kekuatan gempa untuk masing-masing kategori.")
@@ -116,6 +140,14 @@ if mode == "Analisis Historis":
     )
     st.plotly_chart(fig_hist, use_container_width=True)
 
+    st.info("""
+    Distribusi menunjukkan bahwa gempa yang menyebabkan tsunami umumnya memiliki 
+    magnitudo lebih tinggi (rata-rata di atas 7.0 Richter). 
+    Sebaliknya, gempa non-tsunami cenderung terjadi pada rentang magnitudo yang lebih kecil. 
+    Artinya, semakin besar magnitudo, semakin besar pula potensi tsunami yang dihasilkan.
+    """)
+
+
     st.subheader("Korelasi antar Fitur")
     st.caption("Analisis hubungan antar fitur numerik untuk melihat faktor paling relevan terhadap tsunami.")
 
@@ -131,6 +163,15 @@ if mode == "Analisis Historis":
     fig_corr.update_layout(height=500)
     st.plotly_chart(fig_corr, use_container_width=True)
 
+    st.info("""
+    Hasil korelasi menunjukkan bahwa magnitudo dan kedalaman (depth) memiliki hubungan 
+    paling signifikan dengan potensi tsunami. Gempa dengan magnitudo besar dan kedalaman 
+    rendah (shallow) umumnya berpotensi tinggi memicu tsunami. 
+    Fitur lokasi (latitude, longitude) juga turut berperan, menandakan pengaruh 
+    zona geografis terhadap risiko tsunami.
+    """)
+
+
     
 
     # --- Statistik Ringkas ---
@@ -143,9 +184,15 @@ if mode == "Analisis Historis":
     with col3:
         st.metric("Rentang Tahun", f"{data['Year'].min()} – {data['Year'].max()}")
 
-    st.info(
-        "Model ini menggunakan fitur waktu (`Year`, `Month`), sehingga cocok untuk analisis historis namun tidak untuk prediksi masa depan."
-    )
+
+    st.info("""
+    Dataset berisi total 782 data kejadian gempa bumi signifikan yang tercatat secara global 
+    antara tahun 2001 hingga 2022. Dari seluruh peristiwa tersebut, sekitar 38.9% di antaranya 
+    terkategorikan sebagai gempa yang berpotensi menimbulkan tsunami. 
+    Rentang waktu yang luas ini memberikan representasi yang baik untuk analisis pola 
+    dan prediksi risiko tsunami di berbagai wilayah dunia.
+    """)
+
 
 # ======================================================================
 # 🔮 MODE 2: PREDIKSI MASA DEPAN
@@ -216,12 +263,14 @@ elif mode == "Prediksi Tsunami":
         fig3.update_layout(height=350, margin=dict(l=0, r=0, t=30, b=0))
         st.plotly_chart(fig3, use_container_width=True)
 
-    st.info(
-        "Model ini **tidak menggunakan fitur waktu**, sehingga bisa digunakan untuk prediksi gempa baru di tahun berapa pun."
-    )
+
 
 # ======================================================================
 # END
 # ======================================================================
 st.markdown("---")
-st.caption("🌍 Developed with Streamlit — Dataset: Global Earthquake–Tsunami (2001–2022)")
+st.caption(
+    '🌍 Developed with Streamlit — Dataset: '
+    '<a href="https://www.kaggle.com/datasets/ahmeduzaki/global-earthquake-tsunami-risk-assessment-dataset/" target="_blank">Global Earthquake–Tsunami Dataset (2001–2022)</a>',
+    unsafe_allow_html=True
+)
